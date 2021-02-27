@@ -5,11 +5,11 @@ setup:
 build:
   docker:
     web: Dockerfile
-    worker: Dockerfile
+    #worker: Dockerfile
 run:
   web: bash start.sh
-  worker: python3 -m tortoolkit
-  asset-syncer:
-    command:
-      - python asset-syncer.py
-    image: web
+  # worker: python3 -m tortoolkit
+ # asset-syncer:
+   # command:
+   #   - python asset-syncer.py
+  #  image: web
