@@ -86,7 +86,7 @@ def add_url(aria_instance, text_url, c_file_name):
             uris
         )
     except Exception as e:
-        return False, "**FAILED** \n" + str(e) + " \nPlease do not send SLOW links. Read /help"
+        return False, "**FAILED** \n" + str(e) + " \n⚠ Please do not send SLOW links."
     else:
         return True, "" + download.gid + ""
 
