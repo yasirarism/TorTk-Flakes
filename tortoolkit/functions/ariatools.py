@@ -156,18 +156,18 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, rdepth = 0,
         if not complete:
             if not file.error_message:
                 msg = ""
-                downloading_dir_name = "N/A"
+                downloading_dir_name = "Getting data"
                 try:
                     downloading_dir_name = str(file.name)
                 except:
                     pass
                 #
-                msg = f"\n📥 <i>Downloading File:</i>\n<code>{downloading_dir_name}</code>"
+                msg = f"\n📥 <i>Downloading File:</i> <code>{downloading_dir_name}</code>"
                 msg += f"\n<b>🚀 Speed:</b> {file.download_speed_string()}"
-                msg += f"\n<b>⏳ Progress:</b>\n{file.progress_string()}"
+                msg += f"\n<b>⏳ {file.progress_string()}"
                 msg += f"\n<b>🔥 Size:</b> {file.total_length_string()}"
                 msg += f"\n<b>🎯 Info:</b>| P: {file.connections} |"
-                msg += f"\n<b>⚡ Using engine:</b> <code>aria2 for directlink</code>"
+                msg += f"\n<b>⚡ Engine:</b> <code>aria2</code>"
                 if file.seeder is False:
                     """https://t.me/c/1220993104/670177"""
                     msg += f"| S: {file.num_seeders} |"
@@ -200,11 +200,11 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, rdepth = 0,
                 aria2, gid, event, previous_message,user_msg=mes
             )
         else:
-            await event.edit(f"💠 Download completed: <code>{file.name}</code>",parse_mode="html", buttons=None)
+            await event.edit(f"✅ Download completed: <code>{file.name}</code>",parse_mode="html", buttons=None)
             return True
     except aria2p.client.ClientException as e:
         if " not found" in str(e) or "'file'" in str(e):
-            fname = "N/A"
+            fname = "Getting data"
             try:
                 fname = file.name
             except:pass
