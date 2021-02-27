@@ -1,8 +1,8 @@
 class Commands:
-    LEECH = "tor"
+    LEECH = "leech"
     PURGE = "purge"
-    PAUSEALL = "jeda"
-    RESUMEALL = "lanjut"
+    PAUSEALL = "pauseall"
+    RESUMEALL = "resumeall"
     STATUS = "status"
     SETTINGS = "set"
     EXEC = "exec"
