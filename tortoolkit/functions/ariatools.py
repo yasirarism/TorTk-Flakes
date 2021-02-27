@@ -18,7 +18,7 @@ async def aria_start():
     aria2_daemon_start_cmd.append("--daemon=true")
     aria2_daemon_start_cmd.append("--enable-rpc")
     aria2_daemon_start_cmd.append("--disk-cache=0")
-    aria2_daemon_start_cmd.append("--follow-torrent=false")
+    aria2_daemon_start_cmd.append("--follow-torrent=mem")
     aria2_daemon_start_cmd.append("--max-connection-per-server=10")
     aria2_daemon_start_cmd.append("--min-split-size=10M")
     aria2_daemon_start_cmd.append("--rpc-listen-all=true")
@@ -61,7 +61,7 @@ def add_magnet(aria_instance, magnetic_link, c_file_name):
 
 def add_torrent(aria_instance, torrent_file_path):
     if torrent_file_path is None:
-        return False, "**FAILED** \n\nsomething wrongings when trying to add <u>TORRENT</u> file"
+        return False, "**FAILED** \n\nsomething wrong when trying to add <u>TORRENT</u> file"
     if os.path.exists(torrent_file_path):
         # Add Torrent Into Queue
         try:
