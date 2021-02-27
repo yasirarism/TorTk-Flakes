@@ -53,14 +53,14 @@ def add_magnet(aria_instance, magnetic_link, c_file_name):
             magnetic_link
         )
     except Exception as e:
-        return False, "**FAILED** \n" + str(e) + " \nPlease do not send SLOW links. Read /help"
+        return False, "**FAILED** \n" + str(e) + " \n⚠ Please do not send SLOW links."
     else:
         return True, "" + download.gid + ""
 
 
 def add_torrent(aria_instance, torrent_file_path):
     if torrent_file_path is None:
-        return False, "**FAILED** \n\nsomething wrongings when trying to add <u>TORRENT</u> file"
+        return False, "**FAILED** \n\n⚠ Something wrongings when trying to add <u>TORRENT</u> file"
     if os.path.exists(torrent_file_path):
         # Add Torrent Into Queue
         try:
@@ -71,11 +71,11 @@ def add_torrent(aria_instance, torrent_file_path):
                 position=None
             )
         except Exception as e:
-            return False, "**FAILED** \n" + str(e) + " \nPlease do not send SLOW links. Read /help"
+            return False, "**FAILED** \n" + str(e) + " \n⚠ Please do not send SLOW links."
         else:
             return True, "" + download.gid + ""
     else:
-        return False, "**FAILED** \n" + str(e) + " \nPlease try other sources to get workable link"
+        return False, "**FAILED** \n" + str(e) + " \n⚠ Please try other sources to get workable link."
 
 
 def add_url(aria_instance, text_url, c_file_name):
@@ -162,17 +162,17 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, rdepth = 0,
                 except:
                     pass
                 #
-                msg = f"\nDownloading File: <code>{downloading_dir_name}</code>"
-                msg += f"\n<b>Down:</b> {file.download_speed_string()} 🔽 <b>Up</b>: {file.upload_speed_string()} 🔼"
-                msg += f"\n<b>Progress:</b> {file.progress_string()}"
-                msg += f"\n<b>Size:</b> {file.total_length_string()}"
-                msg += f"\n<b>Info:</b>| P: {file.connections} |"
-                msg += f"\n<b>Using engine:</b> <code>aria2 for directlink</code>"
+                msg = f"\n📥 <i>Downloading File:</i>\n<code>{downloading_dir_name}</code>"
+                msg += f"\n<b>🚀 Speed:</b> {file.download_speed_string()}"
+                msg += f"\n<b>⏳ Progress:</b>\n{file.progress_string()}"
+                msg += f"\n<b>🔥 Size:</b> {file.total_length_string()}"
+                msg += f"\n<b>🎯 Info:</b>| P: {file.connections} |"
+                msg += f"\n<b>⚡ Using engine:</b> <code>aria2 for directlink</code>"
                 if file.seeder is False:
                     """https://t.me/c/1220993104/670177"""
                     msg += f"| S: {file.num_seeders} |"
                 # msg += f"\nStatus: {file.status}"
-                msg += f"\nETA: {file.eta_string()}"
+                msg += f"\n⏰ ETA: {file.eta_string()}"
                 #msg += f"\n<code>/cancel {gid}</code>"
                 
                 # format :- torcancel <provider> <identifier>
@@ -200,7 +200,7 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, rdepth = 0,
                 aria2, gid, event, previous_message,user_msg=mes
             )
         else:
-            await event.edit(f"Download completed: <code>{file.name}</code> to path <code>{file.name}</code>",parse_mode="html", buttons=None)
+            await event.edit(f"💠 Download completed: <code>{file.name}</code>",parse_mode="html", buttons=None)
             return True
     except aria2p.client.ClientException as e:
         if " not found" in str(e) or "'file'" in str(e):
