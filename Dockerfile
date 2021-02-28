@@ -6,7 +6,7 @@ RUN chmod -R 777 /torapp
 
 RUN apt -qq update
 
-ENV TZ Asia/Kalkota
+ENV TZ Asia/Jakarta
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt -qq install -y curl git wget \
