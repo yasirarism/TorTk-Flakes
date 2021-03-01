@@ -18,7 +18,7 @@
     "BOT_TOKEN": {
       "description": "Your bot token, as a string.",
       "value": "" 
-      "required" "true" 
+      "required" true
     },
     "API_ID": {
       "description": "Get this value from https://my.telegram.org or @usetgxBot",
@@ -37,7 +37,7 @@
     },
     "DB_URI": {
       "description": "Your Database Url , do skip till deploy then Add Value of DATABASE_URL",
-      "Value": "Postgres",
+      "Value": "DATABASE_URL",
       "required": false
     }
 },
