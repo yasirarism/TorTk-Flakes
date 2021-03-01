@@ -18,7 +18,7 @@
     "BOT_TOKEN": {
       "description": "Your bot token, as a string.",
       "value": "" 
-      "required": true
+      "required": "true" 
     },
     "API_ID": {
       "description": "Get this value from https://my.telegram.org or @usetgxBot",
