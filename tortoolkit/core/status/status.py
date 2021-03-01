@@ -209,7 +209,7 @@ class ARTask(Status):
             self._dl_file.eta_string()
             )
         #msg += "<b>Conns:</b>{} <b>\n".format(
-            self._dl_file.connections
+            #self._dl_file.connections
             )
         msg += "  <i>⚡ Using Engine:</i> <code>Aria2</code>"
 
