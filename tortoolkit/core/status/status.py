@@ -210,7 +210,7 @@ class ARTask(Status):
             )
         #msg += "<b>Conns:</b>{} <b>\n".format(
             #self._dl_file.connections
-            )
+           
         msg += "  <i>⚡ Using Engine:</i> <code>Aria2</code>"
 
         return msg
