@@ -13,22 +13,27 @@
     "BASE_URL_OF_BOT": {
       "description": "your Heroku app Url like :- https://yourappname.herokuapp.com",
       "value": "https://appname.herokuapp.com"
+      "required": true
     },
     "BOT_TOKEN": {
       "description": "Your bot token, as a string.",
-      "value": ""
+      "value": "" 
+      "required": true
     },
     "API_ID": {
       "description": "Get this value from https://my.telegram.org or @usetgxBot",
       "value": ""
+      "required": true
     },
     "API_HASH": {
       "description": "Get this value from https://my.telegram.org or @usetgxbot",
       "value": ""
+      "required": true
     },
     "ALD_USR": {
       "description": "ALLOWED USERS [ids of user or supergroup] seperate by space",
-      "value": ""
+      "value": "1181409600"
+      "required": true
     },
     "DB_URI": {
       "description": "Your Database Url , do skip till deploy then Add Value of DATABASE_URL",
