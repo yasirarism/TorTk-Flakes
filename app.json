@@ -13,7 +13,7 @@
     "BASE_URL_OF_BOT": {
       "description": "your Heroku app Url like :- https://yourappname.herokuapp.com",
       "value": "https://appname.herokuapp.com"
-      "required": true
+      "required" true
     },
     "BOT_TOKEN": {
       "description": "Your bot token, as a string.",
