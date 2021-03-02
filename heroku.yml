@@ -4,9 +4,9 @@ setup:
       as: db
 build:
   docker:
-    #web: Dockerfile
-    worker: Dockerfile
+    web: Dockerfile
+    #worker: Dockerfile
 run:
-  #web: bash start.sh
-    worker: python3 -m tortoolkit
+   web: bash start.sh
+    #worker: python3 -m tortoolkit
 
