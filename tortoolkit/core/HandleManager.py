@@ -185,7 +185,7 @@ def add_handlers(bot: TelegramClient):
 async def handle_leech_command(e):
 
     if not e.is_reply:
-        await e.reply("<b>Reply To Mediafire.com Or `Zippyshare.com Links.</b>")
+        await e.reply("Reply To Mediafire.com Or Zippyshare.com Links.")
     else:
         rclone = False
         tsp = time.time()
