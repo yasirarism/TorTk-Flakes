@@ -167,12 +167,12 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, rdepth = 0,
                 except:
                     pass
 
-                msg = f"\n<b>📥 Downloading:</b> <code>{downloading_dir_name}</code>"
-                msg += f"\n<b>🚀 Speed:</b> <code>{file.download_speed_string()}</code>"
-                msg += f"\n<b>⏳ Progress:</b> <code>{file.progress_string()}</code>"
-                msg += f"\n<b>⏰ ETA:</b> <code>{file.eta_string()}</code>"
-                msg += f"\n<b>🔥 Size:</b> <code>{file.total_length_string()}</code>"
-                msg += f"\n\n  <i>⚡ Using Engine:</i> <code>aria2</code>"
+                msg = f"\n<b>Downloading :</b> <code>{downloading_dir_name}</code>"
+                msg += f"\n<b>Speed :</b> <code>{file.download_speed_string()}</code>"
+                msg += f"\n<b>Size :</b> <code>{file.total_length_string()}</code>"
+                msg += f"\n<b>Progress :</b> <code>{file.progress_string()}</code>"
+                msg += f"\n<b>ETA :</b> <code>{file.eta_string()}</code>"
+                #msg += f"\n\n  <i>Using Engine:</i> <code>aria2</code>"
                 if file.seeder is False:
                     """https://t.me/c/1220993104/670177"""
                     #msg += f"| S: {file.num_seeders} |"
@@ -189,7 +189,7 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, rdepth = 0,
                 # LOGGER.info(msg)
                 if msg != previous_message:
                     if rdepth < 3:
-                        await event.edit(msg,parse_mode="html", buttons=[KeyboardButtonCallback("Cancel Direct Leech",data=data.encode("UTF-8"))])
+                        await event.edit(msg,parse_mode="html", buttons=[KeyboardButtonCallback("Cancel ❌",data=data.encode("UTF-8"))])
                     else:
                         await event.edit(msg,parse_mode="html")
                     previous_message = msg
@@ -205,7 +205,7 @@ async def check_progress_for_dl(aria2, gid, event, previous_message, rdepth = 0,
                 aria2, gid, event, previous_message,user_msg=mes
             )
         else:
-            await event.edit(f"✅ <b>Download completed:</b> <code>{file.name}</code>\n⏳ Trying to upload... ",parse_mode="html", buttons=None)
+            await event.edit(f"<b>Download Completed:</b>\n\n<code>{file.name}</code>\n\n<b>Trying To Upload...</b>",parse_mode="html", buttons=None)
             return True, "Download Complete"
     except aria2p.client.ClientException as e:
         if " not found" in str(e) or "'file'" in str(e):
