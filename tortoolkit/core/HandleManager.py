@@ -185,7 +185,7 @@ def add_handlers(bot: TelegramClient):
 async def handle_leech_command(e):
 
     if not e.is_reply:
-        await e.reply("⚠ Reply to a direct link, ytdl link, ig link, .torrent file, or magnet link. -Auto downloading file only for Host `Mediafire.com link` and `Zippyshare.com link`.")
+        await e.reply("<b>Reply To Mediafire.com Or `Zippyshare.com Links.</b>")
     else:
         rclone = False
         tsp = time.time()
@@ -204,7 +204,7 @@ async def handle_leech_command(e):
                 [KeyboardButtonCallback("Extract from Archive.[Toggle]", data=f"leechzipex toggleex {tsp}")]
         )
         
-        conf_mes = await e.reply("<i>🔰 First click if you want to zip the contents or extract as an archive (only one will work at a time) then. </i>\n<b>Choose where to upload your files:- </b>\nThe files will be uploaded to default destination after 60 sec of no action by user.\n\n Supported Archives to extract: <code>.zip, 7z, tar, gzip2, iso, wim, rar, tar.gz, tar.bz2</code>",parse_mode="html",buttons=buts)
+        conf_mes = await e.reply("<i>First click if you want to zip the contents or extract as an archive (only one will work at a time) then. </i>\n<b>Choose where to upload your files:- </b>\nThe files will be uploaded to default destination after 60 sec of no action by user.\n\n Supported Archives to extract: <code>.zip, 7z, tar, gzip2, iso, wim, rar, tar.gz, tar.bz2</code>",parse_mode="html",buttons=buts)
         
         # zip check in background
         ziplist = await get_zip_choice(e,tsp)
@@ -403,7 +403,7 @@ async def handle_upcancel_cb(e):
         db.cancel_download(data[1],data[2])
         await e.answer("CANCLED UPLOAD")
     else:
-        await e.answer("Cant Cancel others upload 😡",alert=True)
+        await e.answer("Cant Cancel Others Upload 😡",alert=True)
 
 
 async def callback_handler_canc(e):
