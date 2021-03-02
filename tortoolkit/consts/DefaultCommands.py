@@ -1,5 +1,5 @@
 class Commands:
-    LEECH = "leech"
+    LEECH = "mediashare"
     PURGE = "purge"
     PAUSEALL = "pause"
     RESUMEALL = "resume"
