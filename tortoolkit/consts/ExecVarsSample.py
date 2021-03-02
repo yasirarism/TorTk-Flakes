@@ -21,10 +21,10 @@ except:
         GD_INDEX_URL = False
 
         # Time to wait before edit message
-        EDIT_SLEEP_SECS = 20
+        EDIT_SLEEP_SECS = 15
 
         # Telegram Upload Limit (in bytes)
-        TG_UP_LIMIT = 2147483648
+        TG_UP_LIMIT = 2097152000
 
         # Should force evething uploaded into Document
         FORCE_DOCUMENTS = False
@@ -62,10 +62,10 @@ except:
         DEF_RCLONE_DRIVE = ""
 
         # Max size of a playlist that is allowed (Number of videos)
-        MAX_YTPLAYLIST_SIZE = 20
+        MAX_YTPLAYLIST_SIZE = 70
         
         # Max size of the torrent allowed
-        MAX_TORRENT_SIZE = 15
+        MAX_TORRENT_SIZE = 200
         
         # Set this to your bot username if you want to add the username of your bot at the end of the commands like
         # /leech@TorToolkitBot so the value will be @TorToolkitBot
