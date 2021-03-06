@@ -28,7 +28,7 @@ async def cli_call(cmd: Union[str,List[str]]) -> Tuple[str,str]:
     stdout = stdout.decode().strip()
     stderr = stderr.decode().strip()
     
-    return stdout, stderr
+    return stdout, stderr, process.returncode
 
 async def split_in_zip(path,size=None):
     if os.path.exists(path):
@@ -44,9 +44,9 @@ async def split_in_zip(path,size=None):
             else:
                 size = int(size)
                 size = int(size/(1024*1024)) - 10 #for safe
-            cmd = f"7z a -tzip '{bdir}/{fname}.zip' '{path}' -v{size}m "
+            cmd = f'7z a -tzip "{bdir}/{fname}.zip" "{path}" -v{size}m '
 
-            _, err = await cli_call(cmd)
+            _, err, rcode = await cli_call(cmd)
             
             if err:
                 torlog.error(f"Error in zip split {err}")
@@ -79,11 +79,11 @@ async def add_to_zip(path, size = None, split = True):
 
         total_size = get_size(path)
         if total_size > size and split:
-            cmd = f"7z a -tzip '{bdir}/{fname}.zip' '{path}' -v{size}m "
+            cmd = f'7z a -tzip "{bdir}/{fname}.zip" "{path}" -v{size}m s=0b'
         else:
-            cmd = f"7z a -tzip '{bdir}/{fname}.zip' '{path}'"
+            cmd = f'7z a -tzip "{bdir}/{fname}.zip" "{path}" s=0b'
     
-        _, err = await cli_call(cmd)
+        _, err, rcode = await cli_call(cmd)
         
         if err:
             torlog.error(f"Error in zip split {err}")
@@ -121,11 +121,11 @@ async def extract_archive(path, password=""):
                     os.mkdir(extpath)
 
                 if str(path).endswith(("tar","tar.gz","tar.bz2")):
-                    cmd = f"tar -xvf '{path}' -C '{extpath}' --warning=none"
+                    cmd = f'tar -xvf "{path}" -C "{extpath}" --warning=none'
                 else:
-                    cmd = f"7z e -y '{path}' '-o{extpath}' '-p{password}'"
+                    cmd = f'7z e -y "{path}" "-o{extpath}" "-p{password}"'
                 
-                out, err = await cli_call(cmd)
+                out, err, rcode = await cli_call(cmd)
                 
                 if err:
                     if "Wrong password" in err:
