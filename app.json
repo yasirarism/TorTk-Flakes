@@ -1,13 +1,13 @@
 {
-  "name": "Telegram Torrent Bot",
+  "name": "TG Upload Bot",
   "description": "This Bot Leeches Magnet Links and Ytdl Supported links to Our Favourite Telegram and Most Loved Google drive and Other Cloud Servers . ",
   "keywords": [
     "telegram","bot","torrent","leech"
   ],
   "stack": "container",
-  "repository": "https://github.com/yourtulloh/TorToolkit-Telegram",
-  "success_url": "https://t.me/yourtulloh",
-  "website": "https://github.com/yourtulloh",
+  "repository": "https://github.com/sherlockia2/TorTk-Flakes",
+  "success_url": "https://t.me/kaizokutantei",
+  "website": "https://github.com/sherlockia2",
   
 "env": {
     "BASE_URL_OF_BOT": {
