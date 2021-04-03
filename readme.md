@@ -37,7 +37,7 @@ Following are some awesome features offered by this bot:-
 
 ## Deploying on Heroku
 
-Give Star & Fork this repo, then upload **token.pickle** to your forks
+Click the below button and fill in the required variables.
 
 <p><a href="https://heroku.com/deploy"> <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy to Heroku" /></a></p>
 
