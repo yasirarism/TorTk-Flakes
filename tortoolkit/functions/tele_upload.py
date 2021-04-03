@@ -409,7 +409,6 @@ async def upload_single_file(path, message, force_edit,database=None,thumb_image
     caption_str += file_ka_caption
     caption_str += "</code>"
     thonmsg = message
-    thonmsg = message
     message = await message.client.pyro.get_messages(message.chat_id, message.id)
     tout = get_val("EDIT_SLEEP_SECS")
     sent_message = None
