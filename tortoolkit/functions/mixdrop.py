@@ -31,7 +31,7 @@ async def mixdrop_driver(path,message,from_uid,files_dict,job_id=0,force_edit=Fa
     #logging.info("Uploading Now:- {}".format(path))
 
     if os.path.isdir(path):
-        logging.info("Uplaoding the directory:- {}".format(path))
+        logging.info(f"Uplaoding the directory:- {path}")
 
         directory_contents = os.listdir(path)
         directory_contents.sort()
@@ -41,16 +41,14 @@ async def mixdrop_driver(path,message,from_uid,files_dict,job_id=0,force_edit=Fa
             message = message[0]
         except:pass
 
-        message = await message.edit("{}\nFound {} files for this download".format(message.text,len(directory_contents)))
-        
+        message = await message.edit(
+            f"{message.text}\nFound {len(directory_contents)} files for this download"
+        )
+
         if not from_in:
             updb.register_upload(message.chat_id,message.id)
-            if user_msg is None:
-                sup_mes = await message.get_reply_message()
-            else:
-                sup_mes = user_msg
-            
-            data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+            sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+            data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
             buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
             message = await message.edit(buttons=buts)
 
@@ -71,22 +69,22 @@ async def mixdrop_driver(path,message,from_uid,files_dict,job_id=0,force_edit=Fa
                 thumb_path=thumb_path,
                 user_msg=user_msg
             )
-        
+
         if not from_in:
             if updb.get_cancel_status(message.chat_id,message.id):
-                await message.edit("{} - Cancled By user.".format(message.text),buttons=None)
+                await message.edit(f"{message.text} - Cancled By user.", buttons=None)
             else:
                 await message.edit(buttons=None)
             updb.deregister_upload(message.chat_id,message.id)
 
     else:
-        logging.info("Uplaoding the file:- {}".format(path))
+        logging.info(f"Uplaoding the file:- {path}")
         if os.path.getsize(path) > get_val("TG_UP_LIMIT"):
             # the splitted file will be considered as a single upload ;)
-            
-            
+
+
             metadata = extractMetadata(createParser(path))
-            
+
             if metadata is not None:
                 # handle none for unknown
                 metadata = metadata.exportDictionary()
@@ -99,31 +97,28 @@ async def mixdrop_driver(path,message,from_uid,files_dict,job_id=0,force_edit=Fa
                 ftype = ftype.lower().strip()
             else:
                 ftype = "unknown"
-            
+
             if ftype == "video":    
                 todel = await message.reply("FILE LAGRE THEN THRESHOLD SPLITTING NOW.Processing.....\n```Using Algo FFMPEG SPLIT```") 
                 split_dir = await vids_helpers.split_file(path,get_val("TG_UP_LIMIT"))
             else:
                 todel = await message.reply("FILE LAGRE THEN THRESHOLD SPLITTING NOW.Processing.....\n```Using Algo PARTED ZIP SPLIT```") 
                 split_dir = await zip7_utils.split_in_zip(path,get_val("TG_UP_LIMIT"))
-            
+
             dircon = os.listdir(split_dir)
             dircon.sort()
 
             if not from_in:
                 updb.register_upload(message.chat_id,message.id)
-                if user_msg is None:
-                    sup_mes = await message.get_reply_message()
-                else:
-                    sup_mes = user_msg
-                data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+                sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+                data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
                 buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
                 await message.edit(buttons=buts)
 
             for file in dircon:
                 if updb.get_cancel_status(message.chat_id,message.id):
                     continue
-            
+
                 await mixdrop_driver(
                     os.path.join(split_dir,file),
                     message,
@@ -136,28 +131,24 @@ async def mixdrop_driver(path,message,from_uid,files_dict,job_id=0,force_edit=Fa
                     thumb_path=thumb_path,
                     user_msg=user_msg
                 )
-            
+
             try:
                 shutil.rmtree(split_dir)
                 os.remove(path)
             except:pass
-            
+
             if not from_in:
                 if updb.get_cancel_status(message.chat_id,message.id):
-                    await message.edit("{} - Cancled By user.".format(message.text),buttons=None)
+                    await message.edit(f"{message.text} - Cancled By user.", buttons=None)
                 else:
                     await message.edit(buttons=None)
                 updb.deregister_upload(message.chat_id,message.id)
-            # spliting file logic blah blah
+                    # spliting file logic blah blah
         else:
             if not from_in:
                 updb.register_upload(message.chat_id,message.id)
-                if user_msg is None:
-                    sup_mes = await message.get_reply_message()
-                else:
-                    sup_mes = user_msg
-                
-                data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+                sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+                data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
                 buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
                 await message.edit(buttons=buts)
             #print(updb)
@@ -175,7 +166,7 @@ async def mixdrop_driver(path,message,from_uid,files_dict,job_id=0,force_edit=Fa
 
             if not from_in:
                 if updb.get_cancel_status(message.chat_id,message.id):
-                    await message.edit("{} - Cancled By user.".format(message.text),buttons=None)
+                    await message.edit(f"{message.text} - Cancled By user.", buttons=None)
                 else:
                     await message.edit(buttons=None)
                 updb.deregister_upload(message.chat_id,message.id)
@@ -198,7 +189,7 @@ async def mixFileup(path,message,force_edit,database=None,thumb_path=None,user_m
     file_name = os.path.basename(path)
     file_size = os.path.getsize(path)
     metadata = extractMetadata(createParser(path))
-    ometa = metadata    
+    ometa = metadata
     if metadata is not None:
         # handle none for unknown
         metadata = metadata.exportDictionary()
@@ -212,14 +203,10 @@ async def mixFileup(path,message,force_edit,database=None,thumb_path=None,user_m
     else:
         ftype = "unknown"
     if not force_edit:
-        if user_msg is None:
-            sup_mes = await message.get_reply_message()
-        else:
-            sup_mes = user_msg
-        
-        data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+        sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+        data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
         buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
-        msg = await message.reply("Uploading {}".format(file_name),buttons=buts)
+        msg = await message.reply(f"Uploading {file_name}", buttons=buts)
     else:
         msg = message
         #print(metadata)
@@ -247,9 +234,9 @@ async def mixFileup(path,message,force_edit,database=None,thumb_path=None,user_m
             response = await session.post(upload_url, data=data)
             link = await response.json()
 #            dl_b = f"https://mixdrop.co/f/{link['result']['fileref']}"
-            torlog.info("success")            
+            torlog.info("success")
     except Exception as e:
-        if str(e).find("cancel") != -1:
+        if "cancel" in str(e):
             torlog.info("cancled an upload lol")
             await msg.delete()
         else:
@@ -262,7 +249,7 @@ async def mixFileup(path,message,force_edit,database=None,thumb_path=None,user_m
         return None
     if out_msg.id != msg.id:
         await msg.delete()
-    
+
     return out_msg
 
 

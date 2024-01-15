@@ -27,11 +27,11 @@ async def progress_for_pyrogram(
 ):
     now = time.time()
     diff = now - start
-    
+
     # too early to update the progress
     if diff < 1:
         return
-    
+
     if round(diff % time_out) == 0 or current == total:
         if cancel_msg is not None:
             # dirty alt. was not able to find something to stop upload
@@ -40,7 +40,7 @@ async def progress_for_pyrogram(
             if updb.get_cancel_status(cancel_msg.chat.id,cancel_msg.message_id):
                 print("Stopping transmission")
                 client.stop_transmission()
-    
+
         # if round(current / total * 100, 0) % 5 == 0:
         percentage = current * 100 / total
         elapsed_time = round(diff)
@@ -64,20 +64,10 @@ async def progress_for_pyrogram(
         )
         try:
             if not message.photo:
-                await message.edit_text(
-                    text="`{}`\n `{}`".format(
-                        ud_type,
-                        tmp
-                    ),
-                    reply_markup=markup
-                )
+                await message.edit_text(text=f"`{ud_type}`\n `{tmp}`", reply_markup=markup)
             else:
                 await message.edit_caption(
-                    caption="`{}`\n `{}`".format(
-                        ud_type,
-                        tmp
-                    ),
-                    reply_markup=markup
+                    caption=f"`{ud_type}`\n `{tmp}`", reply_markup=markup
                 )
         except:
             pass
@@ -94,7 +84,7 @@ def humanbytes(size):
     while size > power:
         size /= power
         n += 1
-    return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
+    return f"{str(round(size, 2))} {Dic_powerN[n]}B"
 
 
 def time_formatter(seconds: int) -> str:
@@ -107,8 +97,7 @@ def time_formatter(seconds: int) -> str:
         "minutes": 60,
         "seconds": 1
     }
-    for age in r_ange_s:
-        divisor = r_ange_s[age]
+    for age, divisor in r_ange_s.items():
         v_m, remainder = divmod(remainder, divisor)
         v_m = int(v_m)
         if v_m != 0:

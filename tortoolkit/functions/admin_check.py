@@ -21,16 +21,10 @@ async def is_admin(client,user_id,chat_id):
                 return True
             else:
                 
-                if user_id in get_val("ALD_USR"):
-                    return True
-                else:
-                    return False
+                return user_id in get_val("ALD_USR")
         except:
-            torlog.error("Error in admin check {}".format(traceback.format_exc()))
+            torlog.error(f"Error in admin check {traceback.format_exc()}")
             return False
     except Exception as e:
-        torlog.error("Error in admin check {}".format(e))
-        if user_id in get_val("ALD_USR"):
-            return True
-        else:
-            return False
+        torlog.error(f"Error in admin check {e}")
+        return user_id in get_val("ALD_USR")

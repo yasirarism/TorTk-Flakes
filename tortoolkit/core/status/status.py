@@ -55,26 +55,14 @@ class QBTask(Status):
             self._torrent = torrent
 
     async def create_message(self):
-        msg = "<b>📥 Downloading:</b> <code>{}</code>\n".format(
-            self._torrent.name
-           )
-        msg += "<code>{} - {}%</code>\n".format(
-            self.progress_bar(self._torrent.progress),
-            round(self._torrent.progress*100,2)
-            )
+        msg = f"<b>📥 Downloading:</b> <code>{self._torrent.name}</code>\n"
+        msg += f"<code>{self.progress_bar(self._torrent.progress)} - {round(self._torrent.progress * 100, 2)}%</code>\n"
         msg += "<b>🚀 Speed:</b> <code>{}</code>\n".format(
             human_readable_bytes(self._torrent.dlspeed,postfix="/s")
             )
-        msg += "<b>📦 Downloaded:</b> <code>{} of {}</code>\n".format(
-            human_readable_bytes(self._torrent.downloaded),
-            human_readable_bytes(self._torrent.total_size)
-            )
-        msg += "<b>⏰ ETA:</b> <code>{}</code>\n".format(
-            human_readable_timedelta(self._torrent.eta)
-            )
-        msg += "<b>🔗 S:-</b> <code>{}</code> | <b>L:-</b> <code>{}</code>\n\n".format(
-            self._torrent.num_seeds,self._torrent.num_leechs
-            )
+        msg += f"<b>📦 Downloaded:</b> <code>{human_readable_bytes(self._torrent.downloaded)} of {human_readable_bytes(self._torrent.total_size)}</code>\n"
+        msg += f"<b>⏰ ETA:</b> <code>{human_readable_timedelta(self._torrent.eta)}</code>\n"
+        msg += f"<b>🔗 S:-</b> <code>{self._torrent.num_seeds}</code> | <b>L:-</b> <code>{self._torrent.num_leechs}</code>\n\n"
         msg += "  <i>⚡ Using Engine:</i> <code>qBittorrent</code>"
 
         return msg
@@ -82,33 +70,29 @@ class QBTask(Status):
     async def get_state(self):
         #stalled
         if self._torrent.state == "stalledDL":
-            return"Torrent <code>{}</code> is stalled(waiting for connection) temporarily.".format(self._torrent.name)
-        #meta stage
+            return f"Torrent <code>{self._torrent.name}</code> is stalled(waiting for connection) temporarily."
         elif self._torrent.state == "metaDL":
-            return  "⏳ Getting metadata for: <code>{}</code>\n ⌚ Asia/Jakarta Timezone: <code>{}</code>".format(self._torrent.name,datetime.now().strftime("%H:%M:%S"))
+            return f'⏳ Getting metadata for: <code>{self._torrent.name}</code>\n ⌚ Asia/Jakarta Timezone: <code>{datetime.now().strftime("%H:%M:%S")}</code>'
         elif self._torrent.state == "downloading" or self._torrent.state.lower().endswith("dl"):
             # kept for past ref
             return None
 
     async def central_message(self):
         cstate = await self.get_state()
-        if cstate is not None:
-            return cstate
-        else:
-            return await self.create_message()
+        return cstate if cstate is not None else await self.create_message()
 
     async def update_message(self):
         msg = await self.create_message()
         try:
-        
+
             cstate = await self.get_state()
-            
+
             msg = cstate if cstate is not None else msg
-            
+
             await self._message.edit(msg,parse_mode="html",buttons=self._message.reply_markup) 
 
         except (MessageNotModifiedError,FloodWaitError) as e:
-            torlog.error("{}".format(e))
+            torlog.error(f"{e}")
 
     async def set_done(self):
         self._done = True
@@ -137,14 +121,7 @@ class QBTask(Status):
         #percentage is on the scale of 0-1
         comp = get_val("COMPLETED_STR")
         ncomp = get_val("REMAINING_STR")
-        pr = ""
-
-        for i in range(1,11):
-            if i <= int(percentage*10):
-                pr += comp
-            else:
-                pr += ncomp
-        return pr
+        return "".join(comp if i <= int(percentage*10) else ncomp for i in range(1,11))
 
 
 class ARTask(Status):
@@ -191,26 +168,11 @@ class ARTask(Status):
         except:
             pass
 
-        msg = "<b>📥 Downloading:</b> <code>{}</code>\n".format(
-            downloading_dir_name
-           ) 
-        msg += "<code>{} - {}%</code>\n".format(
-            self.progress_bar(self._dl_file.progress/100),
-            round(self._dl_file.progress,2)
-            )
-        msg += "<b>🚀 Speed:</b> <code>{}</code>\n".format(
-            self._dl_file.download_speed_string(),
-            )
-        msg += "<b>📦 Downloaded:</b> <code>{} of {}</code>\n".format(
-            human_readable_bytes(self._dl_file.completed_length),
-            human_readable_bytes(self._dl_file.total_length)
-            )
-        msg += "<b>⏰ ETA:</b> <code>{} mins</code>\n\n".format(
-            self._dl_file.eta_string()
-            )
-        #msg += "<b>Conns:</b>{} <b>\n".format(
-            #self._dl_file.connections
-           
+        msg = f"<b>📥 Downloading:</b> <code>{downloading_dir_name}</code>\n"
+        msg += f"<code>{self.progress_bar(self._dl_file.progress / 100)} - {round(self._dl_file.progress, 2)}%</code>\n"
+        msg += f"<b>🚀 Speed:</b> <code>{self._dl_file.download_speed_string()}</code>\n"
+        msg += f"<b>📦 Downloaded:</b> <code>{human_readable_bytes(self._dl_file.completed_length)} of {human_readable_bytes(self._dl_file.total_length)}</code>\n"
+        msg += f"<b>⏰ ETA:</b> <code>{self._dl_file.eta_string()} mins</code>\n\n"
         msg += "  <i>⚡ Using Engine:</i> <code>Aria2</code>"
 
         return msg
@@ -225,14 +187,11 @@ class ARTask(Status):
     async def update_message(self):
         msg = await self.create_message()
         try:
-            data = "torcancel aria2 {} {}".format(
-                self._gid,
-                self._omess.sender_id
-            )
+            data = f"torcancel aria2 {self._gid} {self._omess.sender_id}"
             await self._message.edit(msg,parse_mode="html",buttons=[KeyboardButtonCallback("Cancel Direct Leech",data=data.encode("UTF-8"))]) 
 
         except (MessageNotModifiedError,FloodWaitError) as e:
-            torlog.error("{}".format(e))
+            torlog.error(f"{e}")
 
     async def set_done(self):
         self._done = True
@@ -264,11 +223,4 @@ class ARTask(Status):
         #percentage is on the scale of 0-1
         comp = get_val("COMPLETED_STR")
         ncomp = get_val("REMAINING_STR")
-        pr = ""
-
-        for i in range(1,11):
-            if i <= int(percentage*10):
-                pr += comp
-            else:
-                pr += ncomp
-        return pr
+        return "".join(comp if i <= int(percentage*10) else ncomp for i in range(1,11))

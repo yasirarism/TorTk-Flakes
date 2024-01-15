@@ -33,10 +33,21 @@ async def progress(current,total,message,file_name,start,time_out,cancel_msg=Non
 
 
         progress = "`[{0}{1}]` \n⏳ Progress: `{2}%`\n".format(
-            ''.join([get_val("COMPLETED_STR") for i in range(math.floor(percentage / 5))]),
-            ''.join([get_val("REMAINING_STR") for i in range(20 - math.floor(percentage / 5))]),
-            round(percentage, 2))
-        
+            ''.join(
+                [
+                    get_val("COMPLETED_STR")
+                    for _ in range(math.floor(percentage / 5))
+                ]
+            ),
+            ''.join(
+                [
+                    get_val("REMAINING_STR")
+                    for _ in range(20 - math.floor(percentage / 5))
+                ]
+            ),
+            round(percentage, 2),
+        )
+
         tmp = progress + "📤 Uploaded:`{0} of {1}`\n🚀 Speed: `{2}/s`\n⏰ ETA: `{3}`\n".format(
             human_readable_bytes(current),
             human_readable_bytes(total),
@@ -46,23 +57,10 @@ async def progress(current,total,message,file_name,start,time_out,cancel_msg=Non
         )
         try:
             if not message.photo:
-                await message.edit(
-                    text="`{}\n `{}`".format(
-                        file_name,
-                        tmp
-                    )
-                )
+                await message.edit(text=f"`{file_name}\n `{tmp}`")
             else:
-                await message.edit(
-                    caption="<code>{}<code>\n <code>{}</code>".format(
-                        file_name,
-                        tmp
-                    )
-                )
+                await message.edit(caption=f"<code>{file_name}<code>\n <code>{tmp}</code>")
         except Exception as e:
             logging.error(e)
-            pass
-        return
-    else:
-        return
+    return
 

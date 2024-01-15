@@ -24,7 +24,7 @@ def get_caption(post: Post) -> str:
     caption = post.caption
     replace = '<a href="https://instagram.com/{}/">{}</a>'
     for mention in post.caption_mentions:
-        men = '@' + mention
+        men = f'@{mention}'
         val = replace.format(mention, men)
         caption = caption.replace(men, val)
     header = f'♥️<code>{post.likes}</code>  💬<code>{post.comments}</code>'
@@ -34,7 +34,7 @@ def get_caption(post: Post) -> str:
     return caption
 
 
-async def upload_to_tg(message, dirname: str, post: Post, sender_id: int) -> None:  # pylint: disable=R0912
+async def upload_to_tg(message, dirname: str, post: Post, sender_id: int) -> None:    # pylint: disable=R0912
     """ uploads downloaded post from local to telegram servers """
     pto = (".jpg", ".jpeg", ".png", ".bmp")
     vdo = (".mkv", ".mp4", ".webm")
@@ -45,24 +45,20 @@ async def upload_to_tg(message, dirname: str, post: Post, sender_id: int) -> Non
         caption = ""
         media = []
         for path in natsorted(os.listdir(dirname)):
-            ab_path = dirname + '/' + path
+            ab_path = f'{dirname}/{path}'
             paths.append(ab_path)
             if str(path).endswith(pto):
-                if captioned:
-                    media.append(ab_path)
-                else:
-                    media.append(ab_path)
+                if not captioned:
                     caption = get_caption(post)[:1023]
                     caption += f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n"
                     captioned = True
+                media.append(ab_path)
             elif str(path).endswith(vdo):
-                if captioned:
-                    media.append(ab_path)
-                else:
-                    media.append(ab_path)
+                if not captioned:
                     caption = get_caption(post)[:1023]
                     caption += f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n"
                     captioned = True
+                media.append(ab_path)
         if media:
             await message.client.send_file(message.chat_id, media,caption=caption,parse_mode="html", reply_to=message.id)
             #await message.client.send_media_group(Config.LOG_CHANNEL_ID, media)
@@ -71,20 +67,21 @@ async def upload_to_tg(message, dirname: str, post: Post, sender_id: int) -> Non
         # upload a photo
         for path in natsorted(os.listdir(dirname)):
             if str(path).endswith(pto):
-                ab_path = dirname + '/' + path
+                ab_path = f'{dirname}/{path}'
                 paths.append(ab_path)
                 await message.client.send_file(
                     message.chat_id,
                     ab_path,
-                    caption=get_caption(post)[:1023] + f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
+                    caption=f"{get_caption(post)[:1023]}\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
                     parse_mode="html",
-                    reply_to=message.id)
+                    reply_to=message.id,
+                )
 
     if post.typename == 'GraphVideo':
         # upload a video
         for path in natsorted(os.listdir(dirname)):
             if str(path).endswith(vdo):
-                ab_path = dirname + '/' + path
+                ab_path = f'{dirname}/{path}'
                 paths.append(ab_path)
                 thumb = await get_thumbnail(ab_path)
 
@@ -92,9 +89,10 @@ async def upload_to_tg(message, dirname: str, post: Post, sender_id: int) -> Non
                     entity=message.chat_id,
                     file=ab_path,
                     thumb=thumb,
-                    caption=get_caption(post)[:1023] + f"\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
+                    caption=f"{get_caption(post)[:1023]}\n\n<a href='tg://user?id={sender_id}'>Done</a>\n#uploads\n",
                     parse_mode="html",
-                    reply_to=message.id)
+                    reply_to=message.id,
+                )
                 if thumb is not None:
                     try:
                         os.remove(thumb)
@@ -149,21 +147,14 @@ async def _insta_post_downloader(message):
         save_metadata=False,
         compress_json=False
     )
-    if False:
-        # add auth code here
-        pass
-    else:
-        await message.edit('Login Credentials not found.\n`[NOTE]`: '
-                           '**Private stuff will not be downloaded**')
-        await asyncio.sleep(2)
+    await message.edit('Login Credentials not found.\n`[NOTE]`: '
+                       '**Private stuff will not be downloaded**')
+    await asyncio.sleep(2)
 
     p = r'^https:\/\/www\.instagram\.com\/(p|tv|reel)\/([A-Za-z0-9\-_]*)\/(\?igshid=[a-zA-Z0-9]*)?$'
     match = re.search(p, omess.raw_text)
     print(omess.raw_text)
-    if False:
-        # have plans here
-        pass
-    elif match:
+    if match:
         dtypes = {
             'p': 'POST',
             'tv': 'IGTV',
@@ -187,6 +178,6 @@ async def _insta_post_downloader(message):
             await upload_to_tg(message, dirname.format(target=post.owner_username), post, sender_id=omess.sender_id)
         finally:
             shutil.rmtree(dirname.format(target=post.owner_username), ignore_errors=True)
-        
+
     else:
         await message.edit('`Invalid Link that you provided`')

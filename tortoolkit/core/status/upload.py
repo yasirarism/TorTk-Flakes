@@ -41,26 +41,18 @@ class TGUploadTask(Status):
 
     async def uploaded_file(self, name=None):
         self._uploaded_files += 1
-        print("\n----updates files to {}\n".format(self._uploaded_files))
+        print(f"\n----updates files to {self._uploaded_files}\n")
         self._current_file = str(name)
 
     async def create_message(self):
-        msg = "<b>Uploading:- </b> <code>{}</code>\n".format(
-            self._current_file
-        )
+        msg = f"<b>Uploading:- </b> <code>{self._current_file}</code>\n"
         prg = 0
         try:
             prg = self._uploaded_files/self._files
 
         except ZeroDivisionError:pass
-        msg += "<b>Progress:- </b> {} - {}\n".format(
-            self.progress_bar(prg),
-            prg*100
-        )
-        msg += "<b>Files:- </b> {} of {} done.\n".format(
-            self._uploaded_files,
-            self._files
-        )
+        msg += f"<b>Progress:- </b> {self.progress_bar(prg)} - {prg * 100}\n"
+        msg += f"<b>Files:- </b> {self._uploaded_files} of {self._files} done.\n"
         msg += "<b>Type:- </b> <code>TG Upload</code>\n"
         return msg
 
@@ -70,11 +62,4 @@ class TGUploadTask(Status):
         #percentage is on the scale of 0-1
         comp = get_val("COMPLETED_STR")
         ncomp = get_val("REMAINING_STR")
-        pr = ""
-
-        for i in range(1,11):
-            if i <= int(percentage*10):
-                pr += comp
-            else:
-                pr += ncomp
-        return pr
+        return "".join(comp if i <= int(percentage*10) else ncomp for i in range(1,11))

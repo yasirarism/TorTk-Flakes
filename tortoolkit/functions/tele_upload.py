@@ -28,7 +28,7 @@ async def upload_handel(path,message,from_uid,files_dict,job_id=0,force_edit=Fal
     #logging.info("Uploading Now:- {}".format(path))
 
     if os.path.isdir(path):
-        logging.info("Uplaoding the directory:- {}".format(path))
+        logging.info(f"Uplaoding the directory:- {path}")
 
         directory_contents = os.listdir(path)
         directory_contents.sort()
@@ -38,16 +38,14 @@ async def upload_handel(path,message,from_uid,files_dict,job_id=0,force_edit=Fal
             message = message[0]
         except:pass
 
-        message = await message.edit("{}\nFound {} files for this download".format(message.text,len(directory_contents)))
-        
+        message = await message.edit(
+            f"{message.text}\nFound {len(directory_contents)} files for this download"
+        )
+
         if not from_in:
             updb.register_upload(message.chat_id,message.id)
-            if user_msg is None:
-                sup_mes = await message.get_reply_message()
-            else:
-                sup_mes = user_msg
-            
-            data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+            sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+            data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
             buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
             message = await message.edit(buttons=buts)
 
@@ -68,22 +66,22 @@ async def upload_handel(path,message,from_uid,files_dict,job_id=0,force_edit=Fal
                 thumb_path=thumb_path,
                 user_msg=user_msg
             )
-        
+
         if not from_in:
             if updb.get_cancel_status(message.chat_id,message.id):
-                await message.edit("{} - Cancled By user.".format(message.text),buttons=None)
+                await message.edit(f"{message.text} - Cancled By user.", buttons=None)
             else:
                 await message.edit(buttons=None)
             updb.deregister_upload(message.chat_id,message.id)
 
     else:
-        logging.info("Uplaoding the file:- {}".format(path))
+        logging.info(f"Uplaoding the file:- {path}")
         if os.path.getsize(path) > get_val("TG_UP_LIMIT"):
             # the splitted file will be considered as a single upload ;)
-            
-            
+
+
             metadata = extractMetadata(createParser(path))
-            
+
             if metadata is not None:
                 # handle none for unknown
                 metadata = metadata.exportDictionary()
@@ -96,31 +94,28 @@ async def upload_handel(path,message,from_uid,files_dict,job_id=0,force_edit=Fal
                 ftype = ftype.lower().strip()
             else:
                 ftype = "unknown"
-            
+
             if ftype == "video":    
                 todel = await message.reply("FILE LAGRE THEN THRESHOLD SPLITTING NOW.Processing.....\n```Using Algo FFMPEG SPLIT```") 
                 split_dir = await vids_helpers.split_file(path,get_val("TG_UP_LIMIT"))
             else:
                 todel = await message.reply("FILE LAGRE THEN THRESHOLD SPLITTING NOW.Processing.....\n```Using Algo PARTED ZIP SPLIT```") 
                 split_dir = await zip7_utils.split_in_zip(path,get_val("TG_UP_LIMIT"))
-            
+
             dircon = os.listdir(split_dir)
             dircon.sort()
 
             if not from_in:
                 updb.register_upload(message.chat_id,message.id)
-                if user_msg is None:
-                    sup_mes = await message.get_reply_message()
-                else:
-                    sup_mes = user_msg
-                data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+                sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+                data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
                 buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
                 await message.edit(buttons=buts)
 
             for file in dircon:
                 if updb.get_cancel_status(message.chat_id,message.id):
                     continue
-            
+
                 await upload_handel(
                     os.path.join(split_dir,file),
                     message,
@@ -133,28 +128,24 @@ async def upload_handel(path,message,from_uid,files_dict,job_id=0,force_edit=Fal
                     thumb_path=thumb_path,
                     user_msg=user_msg
                 )
-            
+
             try:
                 shutil.rmtree(split_dir)
                 os.remove(path)
             except:pass
-            
+
             if not from_in:
                 if updb.get_cancel_status(message.chat_id,message.id):
-                    await message.edit("{} - Cancled By user.".format(message.text),buttons=None)
+                    await message.edit(f"{message.text} - Cancled By user.", buttons=None)
                 else:
                     await message.edit(buttons=None)
                 updb.deregister_upload(message.chat_id,message.id)
-            # spliting file logic blah blah
+                    # spliting file logic blah blah
         else:
             if not from_in:
                 updb.register_upload(message.chat_id,message.id)
-                if user_msg is None:
-                    sup_mes = await message.get_reply_message()
-                else:
-                    sup_mes = user_msg
-                
-                data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+                sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+                data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
                 buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
                 await message.edit(buttons=buts)
             #print(updb)
@@ -172,7 +163,7 @@ async def upload_handel(path,message,from_uid,files_dict,job_id=0,force_edit=Fal
 
             if not from_in:
                 if updb.get_cancel_status(message.chat_id,message.id):
-                    await message.edit("{} - Cancled By user.".format(message.text),buttons=None)
+                    await message.edit(f"{message.text} - Cancled By user.", buttons=None)
                 else:
                     await message.edit(buttons=None)
                 updb.deregister_upload(message.chat_id,message.id)
@@ -194,13 +185,13 @@ async def upload_a_file(path,message,force_edit,database=None,thumb_path=None,us
             return None
     if not os.path.exists(path):
         return None
-        
-    
+
+
     #todo improve this uploading ✔️
     file_name = os.path.basename(path)
     metadata = extractMetadata(createParser(path))
     ometa = metadata
-    
+
     if metadata is not None:
         # handle none for unknown
         metadata = metadata.exportDictionary()
@@ -214,17 +205,13 @@ async def upload_a_file(path,message,force_edit,database=None,thumb_path=None,us
     else:
         ftype = "unknown"
     #print(metadata)
-    
+
 
     if not force_edit:
-        if user_msg is None:
-            sup_mes = await message.get_reply_message()
-        else:
-            sup_mes = user_msg
-        
-        data = "upcancel {} {} {}".format(message.chat_id,message.id,sup_mes.sender_id)
+        sup_mes = await message.get_reply_message() if user_msg is None else user_msg
+        data = f"upcancel {message.chat_id} {message.id} {sup_mes.sender_id}"
         buts = [KeyboardButtonCallback("Cancel upload.",data.encode("UTF-8"))]
-        msg = await message.reply("Uploading {}".format(file_name),buttons=buts)
+        msg = await message.reply(f"Uploading {file_name}", buttons=buts)
     else:
         msg = message
 
@@ -239,14 +226,14 @@ async def upload_a_file(path,message,force_edit,database=None,thumb_path=None,us
     start_time = time.time()
     tout = get_val("EDIT_SLEEP_SECS")
     opath = path
-    
+
     if user_msg is not None:
         dis_thumb = user_db.get_var("DISABLE_THUMBNAIL", user_msg.sender_id)
         if dis_thumb is False or dis_thumb is None:
             thumb_path = user_db.get_thumbnail(user_msg.sender_id)
             if not thumb_path:
                 thumb_path = None
-    
+
     try:
         if get_val("FAST_UPLOAD"):
             torlog.info("Fast upload is enabled")
@@ -256,74 +243,101 @@ async def upload_a_file(path,message,force_edit,database=None,thumb_path=None,us
                 )
 
 
-    
+
         if message.media and force_edit:
             out_msg = await msg.edit(
                 file=path,
                 text=file_name
             )
-        else:
-            
-            if ftype == "video":
-                if user_msg is not None:
-                    force_docs = user_db.get_var("FORCE_DOCUMENTS",user_msg.sender_id)  
-                else:
-                    force_docs = None
-
-                
-                if force_docs is None:
-                    force_docs = get_val("FORCE_DOCUMENTS") 
-                if force_docs == True:
+        elif ftype == "video":
+            force_docs = (
+                user_db.get_var("FORCE_DOCUMENTS", user_msg.sender_id)
+                if user_msg is not None
+                else None
+            )
+            if force_docs is None:
+                force_docs = get_val("FORCE_DOCUMENTS")
+            if force_docs == True:
+                attrs, _ = get_attributes(opath,force_document=True)
+                # add the thumbs for the docs too
+                out_msg = await msg.client.send_file(
+                    msg.to_id,
+                    file=path,
+                    caption=file_name,
+                    reply_to=message.id,
+                    force_document=True,
+                    progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
+                    attributes=attrs,
+                    thumb=thumb_path
+                )
+            else:
+                try:
+                    if thumb_path is not None:
+                        thumb = thumb_path
+                    else:
+                        thumb = await thumb_manage.get_thumbnail(opath)
+                except:
+                    thumb = None
+                    torlog.exception("Error in thumb")
+                try:
+                    attrs, _ = get_attributes(opath,supports_streaming=True)
+                    out_msg = await msg.client.send_file(
+                        msg.to_id,
+                        file=path,
+                        thumb=thumb,
+                        caption=file_name,
+                        reply_to=message.id,
+                        supports_streaming=True,
+                        progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
+                        attributes=attrs
+                    )
+                except VideoContentTypeInvalidError:
                     attrs, _ = get_attributes(opath,force_document=True)
-                    # add the thumbs for the docs too
+                    torlog.warning("Streamable file send failed fallback to document.")
                     out_msg = await msg.client.send_file(
                         msg.to_id,
                         file=path,
                         caption=file_name,
+                        thumb=thumb,
                         reply_to=message.id,
                         force_document=True,
                         progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
-                        attributes=attrs,
-                        thumb=thumb_path
+                        attributes=attrs
                     )
-                else:
-                    try:
-                        if thumb_path is not None:
-                            thumb = thumb_path
-                        else:
-                            thumb = await thumb_manage.get_thumbnail(opath)
-                    except:
-                        thumb = None
-                        torlog.exception("Error in thumb")
-                    try:
-                        attrs, _ = get_attributes(opath,supports_streaming=True)
-                        out_msg = await msg.client.send_file(
-                            msg.to_id,
-                            file=path,
-                            thumb=thumb,
-                            caption=file_name,
-                            reply_to=message.id,
-                            supports_streaming=True,
-                            progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
-                            attributes=attrs
-                        )
-                    except VideoContentTypeInvalidError:
-                        attrs, _ = get_attributes(opath,force_document=True)
-                        torlog.warning("Streamable file send failed fallback to document.")
-                        out_msg = await msg.client.send_file(
-                            msg.to_id,
-                            file=path,
-                            caption=file_name,
-                            thumb=thumb,
-                            reply_to=message.id,
-                            force_document=True,
-                            progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
-                            attributes=attrs
-                        )
-                    except Exception:
-                        torlog.error("Error:- {}".format(traceback.format_exc()))
-            elif ftype == "audio":
-                # not sure about this if
+                except Exception:
+                    torlog.error(f"Error:- {traceback.format_exc()}")
+        elif ftype == "audio":
+            # not sure about this if
+            attrs, _ = get_attributes(opath)
+            out_msg = await msg.client.send_file(
+                msg.to_id,
+                file=path,
+                caption=file_name,
+                reply_to=message.id,
+                progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
+                attributes=attrs
+            )
+        else:
+            if user_msg is not None:
+                force_docs = user_db.get_var("FORCE_DOCUMENTS",user_msg.sender_id)  
+            else:
+                force_docs = None
+
+            if force_docs is None:
+                force_docs = get_val("FORCE_DOCUMENTS") 
+            if force_docs:
+                attrs, _ = get_attributes(opath,force_document=True)
+                out_msg = await msg.client.send_file(
+                    msg.to_id,
+                    file=path,
+                    caption=file_name,
+                    reply_to=message.id,
+                    force_document=True,
+                    progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
+                    attributes=attrs,
+                    thumb=thumb_path
+                )
+            else:
                 attrs, _ = get_attributes(opath)
                 out_msg = await msg.client.send_file(
                     msg.to_id,
@@ -333,38 +347,8 @@ async def upload_a_file(path,message,force_edit,database=None,thumb_path=None,us
                     progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
                     attributes=attrs
                 )
-            else:
-                if user_msg is not None:
-                    force_docs = user_db.get_var("FORCE_DOCUMENTS",user_msg.sender_id)  
-                else:
-                    force_docs = None
-                
-                if force_docs is None:
-                    force_docs = get_val("FORCE_DOCUMENTS") 
-                if force_docs:
-                    attrs, _ = get_attributes(opath,force_document=True)
-                    out_msg = await msg.client.send_file(
-                        msg.to_id,
-                        file=path,
-                        caption=file_name,
-                        reply_to=message.id,
-                        force_document=True,
-                        progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
-                        attributes=attrs,
-                        thumb=thumb_path
-                    )
-                else:
-                    attrs, _ = get_attributes(opath)
-                    out_msg = await msg.client.send_file(
-                        msg.to_id,
-                        file=path,
-                        caption=file_name,
-                        reply_to=message.id,
-                        progress_callback=lambda c,t: progress(c,t,msg,file_name,start_time,tout,message,database),
-                        attributes=attrs
-                    )
     except Exception as e:
-        if str(e).find("cancel") != -1:
+        if "cancel" in str(e):
             torlog.info("cancled an upload lol")
             await msg.delete()
         else:
@@ -373,22 +357,18 @@ async def upload_a_file(path,message,force_edit,database=None,thumb_path=None,us
         if queue is not None:
             await queue.put(uploader_id)
             torlog.info(f"Freed uploader with id {uploader_id}")
-                
+
 
     if out_msg is None:
         return None
     if out_msg.id != msg.id:
         await msg.delete()
-    
+
     return out_msg
 
 
 def black_list_exts(file):
-    for i in ['!qb']:
-        if str(file).lower().endswith(i):
-            return True
-    
-    return False
+    return any(str(file).lower().endswith(i) for i in ['!qb'])
 
 #async def upload_single_file(message, local_file_name, caption_str, from_user, edit_media):
 async def upload_single_file(path, message, force_edit,database=None,thumb_image_path=None,user_msg=None):

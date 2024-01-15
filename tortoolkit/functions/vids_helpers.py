@@ -15,7 +15,7 @@ async def gen_ss(filepath, ts, opfilepath=None):
     # todo check the error pipe and do processing 
     source = filepath
     destination = os.path.dirname(source)
-    ss_name =  str(os.path.basename(source)) + "_" + str(round(time())) + ".jpg"
+    ss_name = f"{str(os.path.basename(source))}_{str(round(time()))}.jpg"
     ss_path = os.path.join(destination,ss_name)
 
     cmd = ["ffmpeg","-loglevel","error","-ss",str(ts),"-i",str(source),"-vframes","1","-q:v","2",str(ss_path)]
@@ -28,8 +28,8 @@ async def gen_ss(filepath, ts, opfilepath=None):
     spipe, epipe = await subpr.communicate()
     epipe = epipe.decode().strip()
     spipe = spipe.decode().strip()
-    torlog.info("Stdout Pipe :- {}".format(spipe))
-    torlog.info("Error Pipe :- {}".format(epipe))
+    torlog.info(f"Stdout Pipe :- {spipe}")
+    torlog.info(f"Error Pipe :- {epipe}")
 
     return ss_path
 
@@ -57,8 +57,8 @@ async def split_file(path,max_size,force_docs=False):
         mime = metadata.get("Common").get("MIME type")
     except:
         mime = metadata.get("Metadata").get("MIME type")
-    
-    
+
+
 
     ftype = mime.split("/")[0]
     ftype = ftype.lower().strip()
@@ -67,10 +67,10 @@ async def split_file(path,max_size,force_docs=False):
 
     if not os.path.isdir(split_dir):
         os.makedirs(split_dir)
-    
+
     if ftype == "video" and not force_docs:
         total_file_size = os.path.getsize(path)
-        
+
         parts = math.ceil(total_file_size/max_size)
         #need this to be implemented to remove recursive file split calls
         #remove saftey margin
@@ -78,7 +78,7 @@ async def split_file(path,max_size,force_docs=False):
         torlog.info(f"Parts {parts}")
 
         minimum_duration = (total_duration / parts) 
-        
+
         #casting to int cuz float Time Stamp can cause errors
         minimum_duration = int(minimum_duration)
         torlog.info(f"Min dur :- {minimum_duration} total {total_duration}")
@@ -90,17 +90,17 @@ async def split_file(path,max_size,force_docs=False):
 
         base_name = os.path.basename(path)
         input_extension = base_name.split(".")[-1]
-        
+
         i = 0
         flag = False
-        
+
         while end_time <= total_duration:
 
             #file name generate
-            parted_file_name = "{}_PART_{}.{}".format(str(base_name),str(i).zfill(5),str(input_extension))
+            parted_file_name = f"{str(base_name)}_PART_{str(i).zfill(5)}.{str(input_extension)}"
 
             output_file = os.path.join(split_dir, parted_file_name)
-            
+
             opfile = await cult_small_video(
                 path,
                 output_file,
@@ -112,13 +112,10 @@ async def split_file(path,max_size,force_docs=False):
 
             #adding offset of 3 seconds to ensure smooth playback 
             start_time = end_time - 3
-            end_time = end_time + minimum_duration
+            end_time += minimum_duration
             i = i + 1
 
-            if (end_time > total_duration) and not flag:
-                 end_time = total_duration
-                 flag = True
-            elif i+1 == parts:
+            if end_time > total_duration and not flag or i + 1 == parts:
                 end_time = total_duration
                 flag = True
             elif flag:
